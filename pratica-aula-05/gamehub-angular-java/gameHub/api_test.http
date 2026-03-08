@@ -1,0 +1,15 @@
+### Listar todos os Pets
+GET http://localhost:8080/jogos
+
+### Cadastrar um novo Pet (POST)
+POST http://localhost:8080/jogos
+Content-Type: application/json
+
+{
+  "name": "Thor",
+  "age": 2,
+  "imageUrl": "https://placedog.net/500/500"
+}
+
+### Buscar um Pet específico
+    GET http://localhost:8080/jogos/1
