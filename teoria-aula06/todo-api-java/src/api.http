@@ -1,0 +1,14 @@
+### GET get all todos
+GET http://localhost:8080/todos
+
+### POST create a new todo
+POST http://localhost:8080/todos
+Content-Type: application/json
+
+{
+  "description":"Estudar Java",
+  "completed": false
+}
+
+### PUT mark todo as completed
+PUT http://localhost:8080/todos
