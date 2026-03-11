@@ -1,22 +1,22 @@
 <main class="p-4">
   <h2 class="text-5xl font-bold">{{ title() }}</h2>
-  <p class="text-lg mt-2">Planeje sas atividades com base no clima atual.</p>
+  <p class="text-lg mt-2">Planeje suas atividades com base no clima atual.</p>
 
-  <div class="flex flex-col gap-4 items-center bg-slate-300 p-4 rounded-lg w-60">
-    <lucide-icon [img]="WashingMachine" class="size-16 w-full"/>
+  <!--<div class="flex flex-col gap-4 items-center bg-slate-300 p-4 rounded-lg w-60">
+    <lucide-icon name="washingMachine" class="size-16 w-full"/>
     <span class="text-2xl">Lavar Roupa</span>
-  </div>
+  </div> -->
 
   <section class="grid grid-cols-3">
-    <card [title]="Ver as estrelas" [icon]="moon"></card>
-    <card [title]="Viajar de balão" [icon]="mountain"></card>
-    <card title="Ir à praia" [icon]="palmTree"></card>
+    <card title="Ver as estrelas" icon="moon"></card>
+    <card title="Viajar de balão" icon="mountain"></card>
+    <card title="Ir à praia" icon="palmTree"></card>
     <card
     title="Ver as estrelas"
     icon="moon"
     (activityClick)="handleCardClick($event)">
     </card>
-    @if (plnnerResponse()) {
+    @if (plannerResponse()) {
       <section>
         <p>{{ plannerResponse() }}</p>
       </section>

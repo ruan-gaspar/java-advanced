@@ -1,6 +1,5 @@
 import { Component, computed, input } from '@angular/core';
 import {output } from '@angular/core';
-import { readonly } from '@angular/forms/signals';
 import {
   LucideAngularModule,
   TreePalm,
@@ -24,6 +23,7 @@ export type CardIcon = keyof typeof icons;
 
 @Component({
   selector: 'card',
+  standalone: true,
   imports: [LucideAngularModule],
   templateUrl: './card.html',
   styleUrl: './card.css',
@@ -31,6 +31,7 @@ export type CardIcon = keyof typeof icons;
 export class Card {
   readonly title = input.required<string>();
   readonly icon = input.required<CardIcon>();
+  
   readonly iconImg = computed(() => icons[this.icon()]);
 
   readonly activityClick = output<string>();

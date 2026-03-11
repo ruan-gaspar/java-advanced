@@ -1,6 +1,10 @@
-<div>
+<div class="flex flex-col gap-4 items-center bg-slate-200 p-4 
+rounded-lg cursor-pointer" (click)="onCardClick()"
+>
+
   <lucide-icon [img]="iconImg()" class="size-16 w-full"/>
-  <span class="text-2xl"> {{ title() }}</span>
+  
+<span class="text-2xl"> {{ title() }}</span>
   <button (click)="onCardClick()">
     <lucide-icon [img]="iconImg()"/>
     <span>{{ title() }}</span>
