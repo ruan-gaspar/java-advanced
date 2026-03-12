@@ -1,0 +1,27 @@
+.card {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid #2c2c2c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  background-color: #262626;
+  border-color: #444;
+}
+
+.card span {
+  display: block;
+  margin-top: 12px;
+  font-size: 18px;
+  color: white;
+}
+
+/* ícone */
+.card lucide-icon {
+  color: white;
+}

@@ -1,0 +1,33 @@
+<div class="container">
+
+  <h1>🎮 Game Finder</h1>
+
+  <p>Escolha um jogo para receber uma recomendação</p>
+
+  <div class="games">
+
+    <card-game
+      title="elden-ring"
+      icon="gamepad"
+      (activityClick)="checkGame($event)">
+    </card-game>
+
+    <card-game
+      title="cyberpunk-2077"
+      icon="gamepad"
+      (activityClick)="checkGame($event)">
+    </card-game>
+
+    <card-game
+      title="no-mans-sky"
+      icon="gamepad"
+      (activityClick)="checkGame($event)">
+    </card-game>
+
+  </div>
+
+  <div class="result">
+    {{ result() }}
+  </div>
+
+</div>

@@ -1,0 +1,23 @@
+.container {
+  text-align: center;
+  padding: 40px;
+}
+
+h1 {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(3, 220px);
+  gap: 25px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.result {
+  margin-top: 40px;
+  font-size: 26px;
+  color: #00ff9c;
+}
