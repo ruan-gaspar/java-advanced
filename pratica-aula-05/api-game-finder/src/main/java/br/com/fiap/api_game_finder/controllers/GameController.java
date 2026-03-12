@@ -25,7 +25,8 @@ public class GameController {
             String result,
             double rating,
             int reviews,
-            String released
+            String released,
+            String image
     ) {}
 
     @GetMapping
@@ -38,7 +39,8 @@ public class GameController {
                 result,
                 data.rating(),
                 data.ratings_count(),
-                data.released()
+                data.released(),                                                                
+                data.background_image()
         );
     }
 }

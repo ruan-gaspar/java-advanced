@@ -13,7 +13,8 @@ export class ApiService {
       result: string,
       rating: number,
       reviews: number,
-      released: string
+      released: string,
+      image: string
     }>(`${this.apiUrl}?game=${game}`);
   }
 }

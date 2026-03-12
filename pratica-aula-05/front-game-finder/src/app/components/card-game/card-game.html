@@ -1,4 +1,19 @@
 <div class="card" (click)="onCardClick()">
-  <lucide-icon [img]="iconImg()" size="48" class="icon"></lucide-icon>
-  <span>{{ formatTitle(title()) }}</span>
+
+  <img [src]="image()" class="cover">
+
+  <div class="overlay">
+
+    <div class="info">
+      <span class="title">{{ label() }}</span>
+<!--
+  <lucide-icon [img]="iconImg()" class="icon"></lucide-icon>
+  -->
+      <button class="btn">
+        Ver recomendação
+      </button>
+    </div>
+
+  </div>
+
 </div>

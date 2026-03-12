@@ -19,21 +19,24 @@ export type CardIcon = keyof typeof icons;
 export class CardGame {
 
   readonly title = input.required<string>();
+  readonly image = input.required<string>();
   readonly icon = input.required<CardIcon>();
 
   readonly iconImg = computed(() => icons[this.icon()]);
 
   readonly activityClick = output<string>();
 
+ label = computed(() => this.formatTitle(this.title()));
+
+  formatTitle(name: string) {
+    return name
+    .replaceAll('-', ' ')
+    .split(' ')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+  }
   onCardClick() {
     this.activityClick.emit(this.title());
 
-  }
-  formatTitle(name: string) {
-    return name
-      .replaceAll('-', ' ')
-      .split(' ')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
   }
 }

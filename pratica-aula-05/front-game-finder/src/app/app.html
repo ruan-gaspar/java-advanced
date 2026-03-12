@@ -9,11 +9,15 @@
   @for (game of games; track game) {
 
     <card-game
-      [title]="game.id"
+  [title]="game.name"
+  [image]="game.image"
+  icon="gamepad"
+  (activityClick)="checkGame(game.id)">
+</card-game>
+    <!--
       icon="gamepad"
-      (activityClick)="checkGame($event)">
-    </card-game>
 
+-->
   }
 
 </div>
@@ -41,8 +45,9 @@ icon="gamepad"
 </div>
 -->
 @if (gameInfo()){
+  <div class="result">
 
-<div class="result">
+  <img [src]="gameInfo()?.image" class="cover"/>
 
   <h2>🎮 Resultado</h2>
 
@@ -54,7 +59,5 @@ icon="gamepad"
 
   <p><strong>📅 Lançamento:</strong> {{ gameInfo()?.released }}</p>
 
-</div>
+  </div>
 }
-
-</div>
