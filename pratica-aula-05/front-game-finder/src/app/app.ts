@@ -19,12 +19,17 @@ export class App {
 
   private readonly api = inject(ApiService);
 
-  result = signal<string>('');
+  gameInfo = signal<any>(null);
+
+  //result = signal<string>('');
 
   checkGame(game: string) {
+
+    console.log("Clicou no jogo: " + game)
+
     this.api.getRecommendation(game)
       .subscribe(r => {
-        this.result.set(r.result);
+        this.gameInfo.set(r);
       });
   }
 }

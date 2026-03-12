@@ -25,9 +25,21 @@
     </card-game>
 
   </div>
+  @if (gameInfo()){
 
-  <div class="result">
-    {{ result() }}
-  </div>
+    <div class="result">
+
+      <h2>🎮 Resultado</h2>
+
+      <p><strong>Recomendação:</strong> {{ gameInfo()?.result }}</p>
+
+      <p><strong>⭐ Nota:</strong> {{ gameInfo()?.rating }}</p>
+
+      <p><strong>🧾 Avaliações:</strong> {{ gameInfo()?.reviews }}</p>
+
+      <p><strong>📅 Lançamento:</strong> {{ gameInfo()?.released }}</p>
+
+    </div>
+  }
 
 </div>

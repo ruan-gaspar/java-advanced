@@ -6,11 +6,14 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/games  ';
+  private readonly apiUrl = 'http://localhost:8080/api/games';
 
   getRecommendation(game: string) {
-    return this.http.get<{ result: string }>(
-      `${this.apiUrl}?game=${game}`
-    );
+    return this.http.get<{
+      result: string,
+      rating: number,
+      reviews: number,
+      released: string
+    }>(`${this.apiUrl}?game=${game}`);
   }
 }

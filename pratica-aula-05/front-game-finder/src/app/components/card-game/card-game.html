@@ -1,4 +1,4 @@
 <div class="card" (click)="onCardClick()">
-  <lucide-icon [img]="iconImg()" size="48"></lucide-icon>
-  <span>{{ title() }}</span>
+  <lucide-icon [img]="iconImg()" size="48" class="icon"></lucide-icon>
+  <span>{{ title().replaceAll('-', ' ') }}</span>
 </div>
