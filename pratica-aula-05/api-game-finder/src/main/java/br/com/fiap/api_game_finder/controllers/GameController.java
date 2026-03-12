@@ -21,7 +21,12 @@ public class GameController {
         this.gameRecomendationService = gameRecomendationService;
     }
 
-    public record GameResult(String result) {}
+    public record GameResult(
+            String result,
+            double rating,
+            int reviews,
+            String released
+    ) {}
 
     @GetMapping
     public GameResult recommend(@RequestParam String game) {
@@ -29,6 +34,11 @@ public class GameController {
         var data = rawgApiService.getGame(game);
         var result = gameRecomendationService.evaluate(data);
 
-        return new GameResult(result);
+        return new GameResult(
+                result,
+                data.rating(),
+                data.ratings_count(),
+                data.released()
+        );
     }
 }
