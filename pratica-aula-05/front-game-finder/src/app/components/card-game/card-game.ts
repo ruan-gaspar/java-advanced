@@ -6,6 +6,7 @@ const icons = {
   gamepad: Gamepad2
 } as const;
 
+
 export type CardIcon = keyof typeof icons;
 
 @Component({
@@ -26,5 +27,13 @@ export class CardGame {
 
   onCardClick() {
     this.activityClick.emit(this.title());
+
+  }
+  formatTitle(name: string) {
+    return name
+      .replaceAll('-', ' ')
+      .split(' ')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
   }
 }

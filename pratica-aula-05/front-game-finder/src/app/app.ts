@@ -8,7 +8,6 @@ import { CardGame } from './components/card-game/card-game';
   standalone: true,
   selector: 'app-root',
   imports: [
-    RouterOutlet,
     LucideAngularModule,
     CardGame
   ],
@@ -20,6 +19,19 @@ export class App {
   private readonly api = inject(ApiService);
 
   gameInfo = signal<any>(null);
+
+  games = [
+    { id: 'elden-ring', name: 'Elden Ring' },
+    { id: 'cyberpunk-2077', name: 'Cyberpunk 2077' },
+    { id: 'no-mans-sky', name: 'No Man\'s Sky' },
+    { id: 'the-witcher-3-wild-hunt', name: 'The Witcher 3: Wild Hunt' },
+    { id: 'red-dead-redemption-2', name: 'Red Dead Redemption 2' },
+    { id: 'god-of-war', name: 'God of War' },
+    { id: 'baldurs-gate-3', name: 'Baldur\'s Gate 3' },
+    { id: 'hades', name: 'Hades' },
+    { id: 'stardew-valley', name: 'Stardew Valley' },
+    { id: 'grand-theft-auto-v', name: 'Grand Theft Auto V' }
+  ];
 
   //result = signal<string>('');
 

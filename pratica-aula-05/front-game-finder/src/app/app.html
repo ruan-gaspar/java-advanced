@@ -6,40 +6,55 @@
 
   <div class="games">
 
+  @for (game of games; track game) {
+
     <card-game
-      title="elden-ring"
+      [title]="game.id"
       icon="gamepad"
       (activityClick)="checkGame($event)">
     </card-game>
 
-    <card-game
-      title="cyberpunk-2077"
-      icon="gamepad"
-      (activityClick)="checkGame($event)">
-    </card-game>
-
-    <card-game
-      title="no-mans-sky"
-      icon="gamepad"
-      (activityClick)="checkGame($event)">
-    </card-game>
-
-  </div>
-  @if (gameInfo()){
-
-    <div class="result">
-
-      <h2>🎮 Resultado</h2>
-
-      <p><strong>Recomendação:</strong> {{ gameInfo()?.result }}</p>
-
-      <p><strong>⭐ Nota:</strong> {{ gameInfo()?.rating }}</p>
-
-      <p><strong>🧾 Avaliações:</strong> {{ gameInfo()?.reviews }}</p>
-
-      <p><strong>📅 Lançamento:</strong> {{ gameInfo()?.released }}</p>
-
-    </div>
   }
+
+</div>
+<!--
+  <div class="games">
+
+    <card-game
+    title="elden-ring"
+    icon="gamepad"
+    (activityClick)="checkGame($event)">
+  </card-game>
+
+  <card-game
+  title="cyberpunk-2077"
+  icon="gamepad"
+  (activityClick)="checkGame($event)">
+</card-game>
+
+<card-game
+title="no-mans-sky"
+icon="gamepad"
+(activityClick)="checkGame($event)">
+</card-game>
+
+</div>
+-->
+@if (gameInfo()){
+
+<div class="result">
+
+  <h2>🎮 Resultado</h2>
+
+  <p><strong>Recomendação:</strong> {{ gameInfo()?.result }}</p>
+
+  <p><strong>⭐ Nota:</strong> {{ gameInfo()?.rating }}</p>
+
+  <p><strong>🧾 Avaliações:</strong> {{ gameInfo()?.reviews }}</p>
+
+  <p><strong>📅 Lançamento:</strong> {{ gameInfo()?.released }}</p>
+
+</div>
+}
 
 </div>
