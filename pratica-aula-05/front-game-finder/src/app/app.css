@@ -46,7 +46,7 @@ h1 {
 
 .games {
   display: grid;
-  grid-template-columns: repeat(auto-fit, 220px);
+  grid-template-columns: repeat(auto-fit, 170px);
   gap: 25px;
   justify-content: center;
   margin-top: 40px;
