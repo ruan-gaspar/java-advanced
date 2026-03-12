@@ -31,3 +31,42 @@ h1 {
   border-radius: 8px;
   margin-bottom: 20px;
 }
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+
+  max-width: 1400px;
+  margin: auto;
+}
+
+.games-section {
+  text-align: center;
+}
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 220px);
+  gap: 25px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.result-panel {
+  position: sticky;
+  top: 40px;
+
+  height: fit-content;
+
+  background: rgba(20,20,20,0.8);
+  padding: 25px;
+  border-radius: 12px;
+
+  border: 1px solid #2c2c2c;
+}
+
+.result-cover {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}

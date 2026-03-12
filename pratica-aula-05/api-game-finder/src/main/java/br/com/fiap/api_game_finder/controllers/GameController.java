@@ -22,6 +22,7 @@ public class GameController {
     }
 
     public record GameResult(
+            String name,
             String result,
             double rating,
             int reviews,
@@ -36,10 +37,11 @@ public class GameController {
         var result = gameRecomendationService.evaluate(data);
 
         return new GameResult(
+                data.name(),
                 result,
                 data.rating(),
                 data.ratings_count(),
-                data.released(),                                                                
+                data.released(),
                 data.background_image()
         );
     }

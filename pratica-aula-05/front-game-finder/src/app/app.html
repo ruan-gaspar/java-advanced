@@ -1,63 +1,47 @@
-<div class="container">
+<div class="layout">
 
-  <h1>🎮 Game Finder</h1>
+  <!-- coluna esquerda -->
+  <div class="games-section">
 
-  <p>Escolha um jogo para receber uma recomendação</p>
+    <h1>🎮 Game Finder</h1>
+    <p>Escolha um jogo para receber uma recomendação</p>
 
-  <div class="games">
+    <div class="games">
 
-  @for (game of games; track game) {
+      @for (game of games; track game) {
+        <card-game
+          [title]="game.name"
+          [image]="game.image"
+          icon="gamepad"
+          (activityClick)="checkGame(game.id)">
+        </card-game>
+      }
 
-    <card-game
-  [title]="game.name"
-  [image]="game.image"
-  icon="gamepad"
-  (activityClick)="checkGame(game.id)">
-</card-game>
-    <!--
-      icon="gamepad"
-
--->
-  }
-
-</div>
-<!--
-  <div class="games">
-
-    <card-game
-    title="elden-ring"
-    icon="gamepad"
-    (activityClick)="checkGame($event)">
-  </card-game>
-
-  <card-game
-  title="cyberpunk-2077"
-  icon="gamepad"
-  (activityClick)="checkGame($event)">
-</card-game>
-
-<card-game
-title="no-mans-sky"
-icon="gamepad"
-(activityClick)="checkGame($event)">
-</card-game>
-
-</div>
--->
-@if (gameInfo()){
-  <div class="result">
-
-  <img [src]="gameInfo()?.image" class="cover"/>
-
-  <h2>🎮 Resultado</h2>
-
-  <p><strong>Recomendação:</strong> {{ gameInfo()?.result }}</p>
-
-  <p><strong>⭐ Nota:</strong> {{ gameInfo()?.rating }}</p>
-
-  <p><strong>🧾 Avaliações:</strong> {{ gameInfo()?.reviews }}</p>
-
-  <p><strong>📅 Lançamento:</strong> {{ gameInfo()?.released }}</p>
+    </div>
 
   </div>
-}
+
+  <!-- coluna direita -->
+  <div class="result-panel">
+
+    @if (gameInfo()) {
+
+      <img [src]="gameInfo()?.image" class="result-cover"/>
+
+      <h2>🎮 Resultado</h2>
+      <h3>{{ gameInfo()?.name }}</h3>
+      <p><strong>Recomendação:</strong> {{ gameInfo()?.result }}</p>
+      <p><strong>⭐ Nota:</strong> {{ gameInfo()?.rating }}</p>
+      <p><strong>🧾 Avaliações:</strong> {{ gameInfo()?.reviews }}</p>
+      <p><strong>📅 Lançamento:</strong> {{ gameInfo()?.released }}</p>
+
+    } @else {
+
+      <h2>🎮 Recomendação</h2>
+      <p>Clique em um jogo para ver os detalhes.</p>
+
+    }
+
+  </div>
+
+</div>
