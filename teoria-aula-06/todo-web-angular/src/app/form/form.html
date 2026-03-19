@@ -1,0 +1,10 @@
+<h1 class="text-lg font-semibold mb-6">Cadastrar tarefa</h1>
+
+<form [formGroup]="todoForm" class="flex flex-col" (ngSubmit)="onSubmit()">
+  <label for="description">Descrição</label>
+  <input formControlName="description" type="text" id="description" class="p-2 border-slate-300 border-2 rounded">
+  <button type="submit" class="bg-emerald-500 text-white p-2 rounded mt-4">
+    Cadastrar Tarefa
+  </button>
+</form>
+

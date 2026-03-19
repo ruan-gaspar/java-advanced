@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: todo
+
+rsa:
+  public-key: classpath:public.pem
+  private-key: classpath:private.pem

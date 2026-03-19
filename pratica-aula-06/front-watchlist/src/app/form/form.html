@@ -1,0 +1,9 @@
+<h1 class="text-lg font-semibold mb-6">Cadastrar Filme</h1>
+
+<form class="flex flex-col" (submit)="save(); $event.preventDefault()">
+  <label for="name">Nome:</label>
+  <input [formControl]="name" type="text" id="name" class="p-2 border-slate-300 rounded" />
+  <button type="submit"  class="bg-emerald-500 text-white p-2 rounded mt-4">Cadastrar </button>
+</form>
+
+<label> {{ name.value }}</label>

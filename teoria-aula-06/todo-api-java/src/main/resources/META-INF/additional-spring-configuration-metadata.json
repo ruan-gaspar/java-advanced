@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "rsa",
+      "type": "java.lang.String",
+      "description": "Description for rsa."
+    }
+  ] }
