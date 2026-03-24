@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ApiTripFinder
+  datasource:
+    url: jdbc:postgresql://localhost:5433/tripfinder
+    username: tripfinder_user
+    password: 123456
+foursquare:
+  api-key: API_KEY_AQUI
+  base-url: https://api.foursquare.com/v3
+
+docker:
+  compose:
+    enabled: false
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+
+jpa:
+    hibernate:
+    ddl-auto: validate
+    show-sql: true
+jwt:
+  secret: ZmY2NjE4Y2Q0ZjI3N2Q3M2E4M2M5N2Y0MmE3YjE5YzQ5ODQ3MTY1YjQxM2MxN2M2YjA0OGQ2YTRkZmI4Y2JlZA==
+  expiration: 86400000
+

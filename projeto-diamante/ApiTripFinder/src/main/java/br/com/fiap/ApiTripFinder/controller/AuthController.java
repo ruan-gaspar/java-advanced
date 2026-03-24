@@ -1,0 +1,32 @@
+package br.com.fiap.ApiTripFinder.controller;
+
+import br.com.fiap.ApiTripFinder.dto.auth.AuthResponseDTO;
+import br.com.fiap.ApiTripFinder.dto.auth.LoginRequestDTO;
+import br.com.fiap.ApiTripFinder.dto.auth.RegisterRequestDTO;
+import br.com.fiap.ApiTripFinder.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthService authService;
+    @Operation(summary = "Registrar usuário")
+    @SecurityRequirements
+    @PostMapping("/register")
+    public AuthResponseDTO register(@Valid @RequestBody RegisterRequestDTO request) {
+        return authService.register(request);
+    }
+    @Operation(summary = "Autenticar usuário")
+    @SecurityRequirements
+    @PostMapping("/login")
+    public AuthResponseDTO login(@Valid @RequestBody LoginRequestDTO request) {
+        return authService.login(request);
+    }
+
+}
