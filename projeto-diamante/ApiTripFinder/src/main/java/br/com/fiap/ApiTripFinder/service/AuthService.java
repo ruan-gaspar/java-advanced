@@ -74,4 +74,16 @@ public class AuthService {
                 .role(user.getRole().name())
                 .build();
     }
+    public AuthResponseDTO getCurrentUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
+        return AuthResponseDTO.builder()
+                .token(null)
+                .type("Bearer")
+                .userId(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build();
+    }
 }

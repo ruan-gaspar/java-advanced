@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,5 +29,9 @@ public class AuthController {
     public AuthResponseDTO login(@Valid @RequestBody LoginRequestDTO request) {
         return authService.login(request);
     }
-
+    @Operation(summary = "Dados do usuário autenticado")
+    @GetMapping("/me")
+    public AuthResponseDTO me(Authentication authentication) {
+        return authService.getCurrentUser(authentication.getName());
+    }
 }
