@@ -11,7 +11,7 @@ import lombok.*;
 public class FavoritePlaceRequestDTO {
 
     @NotBlank(message = "O id do lugar é obrigatório")
-    private String externalPlaceId;
+    private String id;
 
     @NotBlank(message = "O nome do lugar é obrigatório")
     private String name;

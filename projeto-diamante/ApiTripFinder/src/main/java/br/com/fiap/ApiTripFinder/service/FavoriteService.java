@@ -25,13 +25,13 @@ public class FavoriteService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        favoritePlaceRepository.findByUserIdAndExternalPlaceId(user.getId(), request.getExternalPlaceId())
+        favoritePlaceRepository.findByUserIdAndExternalPlaceId(user.getId(), request.getId())
                 .ifPresent(favorite -> {
                     throw new BusinessException("Esse lugar já está nos favoritos");
                 });
 
         FavoritePlace favoritePlace = FavoritePlace.builder()
-                .externalPlaceId(request.getExternalPlaceId())
+                .externalPlaceId(request.getId())
                 .name(request.getName())
                 .category(request.getCategory())
                 .address(request.getAddress())
