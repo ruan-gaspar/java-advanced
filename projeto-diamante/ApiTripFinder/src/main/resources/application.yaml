@@ -5,9 +5,9 @@ spring:
     url: jdbc:postgresql://localhost:5433/tripfinder
     username: tripfinder_user
     password: 123456
-foursquare:
-  api-key: API_KEY_AQUI
-  base-url: https://api.foursquare.com/v3
+opentripmap:
+  api-key: 5ae2e3f221c38a28845f05b6e20ae05a9989c75748090ecff0db21b4
+  base-url: https://api.opentripmap.com/0.1/en
 
 docker:
   compose:

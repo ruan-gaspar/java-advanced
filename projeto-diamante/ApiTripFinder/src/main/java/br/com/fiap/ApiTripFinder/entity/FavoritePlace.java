@@ -30,6 +30,12 @@ public class FavoritePlace {
     @Column(length = 255)
     private String address;
 
+    @Column(length = 100)
+    private String city;
+
+    @Column(length = 100)
+    private String country;
+
     private Double latitude;
 
     private Double longitude;
