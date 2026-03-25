@@ -1,11 +1,13 @@
 package br.com.fiap.ApiTripFinder.service;
 
-import br.com.fiap.ApiTripFinder.dto.auth.AuthResponseDTO;
+import  br.com.fiap.ApiTripFinder.dto.auth.AuthResponseDTO;
 import br.com.fiap.ApiTripFinder.dto.auth.LoginRequestDTO;
 import br.com.fiap.ApiTripFinder.dto.auth.RegisterRequestDTO;
+import br.com.fiap.ApiTripFinder.dto.auth.UpdateUserRequestDTO;
 import br.com.fiap.ApiTripFinder.entity.Role;
 import br.com.fiap.ApiTripFinder.entity.User;
 import br.com.fiap.ApiTripFinder.exception.BusinessException;
+import br.com.fiap.ApiTripFinder.exception.ResourceNotFoundException;
 import br.com.fiap.ApiTripFinder.repository.UserRepository;
 import br.com.fiap.ApiTripFinder.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -86,4 +88,32 @@ public class AuthService {
                 .role(user.getRole().name())
                 .build();
     }
+ public AuthResponseDTO updateCurrentUser(String currentEmail, UpdateUserRequestDTO request) {
+        User user = userRepository.findByEmail(currentEmail)
+                .orElseThrow(()->new ResourceNotFoundException("Usuário não encontrado"));
+        if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new BusinessException("Senha inválida");
+        }
+        if(request.getEmail() != null && request.getEmail().isEmpty()) {
+            boolean emailAlreadyExists = userRepository.existsByEmail(request.getEmail())
+                    && user.getEmail().equals(request.getEmail());
+            if(emailAlreadyExists) {
+                throw new BusinessException("Já existe um usuário cadastrado com esse e-mail");
+            }
+            user.setEmail(request.getEmail());
+        }
+        if (request.getNewPassword() != null && request.getNewPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        }
+        User updatedUser = userRepository.save(user);
+
+        return AuthResponseDTO.builder()
+                .token(null)
+                .type("Bearer")
+                .userId(updatedUser.getId())
+                .name(updatedUser.getName())
+                .email(updatedUser.getEmail())
+                .role(updatedUser.getRole().name())
+                .build();
+ }
 }

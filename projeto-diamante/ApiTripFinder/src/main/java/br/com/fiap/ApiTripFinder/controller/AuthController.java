@@ -3,6 +3,7 @@ package br.com.fiap.ApiTripFinder.controller;
 import br.com.fiap.ApiTripFinder.dto.auth.AuthResponseDTO;
 import br.com.fiap.ApiTripFinder.dto.auth.LoginRequestDTO;
 import br.com.fiap.ApiTripFinder.dto.auth.RegisterRequestDTO;
+import br.com.fiap.ApiTripFinder.dto.auth.UpdateUserRequestDTO;
 import br.com.fiap.ApiTripFinder.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -33,5 +34,12 @@ public class AuthController {
     @GetMapping("/me")
     public AuthResponseDTO me(Authentication authentication) {
         return authService.getCurrentUser(authentication.getName());
+    }
+    @Operation(summary = "Atualizar o e-mail e/ou senha do usuário autenticado")
+    @PutMapping("/me")
+    public AuthResponseDTO updateMe(
+            Authentication authentication,
+            @Valid @RequestBody UpdateUserRequestDTO request) {
+        return authService.updateCurrentUser(authentication.getName(), request);
     }
 }
