@@ -11,5 +11,7 @@ public interface PlaceProviderClient {
 
     List<PlaceSummaryDTO> searchNearby(Double latitude, Double longitude, Integer radius, String category, Integer limit);
 
+    List<PlaceSummaryDTO> searchNearbyByTerm(Double latitude, Double longitude, Integer radius, String query, String category, Integer limit);
+
     PlaceDetailDTO getPlaceDetails(String placeId);
 }

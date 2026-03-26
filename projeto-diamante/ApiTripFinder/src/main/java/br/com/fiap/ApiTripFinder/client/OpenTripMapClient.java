@@ -100,6 +100,38 @@ public class OpenTripMapClient implements PlaceProviderClient {
     }
 
     @Override
+    public List<PlaceSummaryDTO> searchNearbyByTerm(Double latitude, Double longitude, Integer radius, String query, String category, Integer limit) {
+        try {
+            int safeLimit = limit != null ? limit : 10;
+            int fetchLimit = Math.max(safeLimit * 3, 30);
+
+            List<PlaceSummaryDTO> nearbyPlaces = searchNearby(
+                    latitude,
+                    longitude,
+                    radius != null ? radius : 3000,
+                    category,
+                    fetchLimit
+            );
+            List<PlaceSummaryDTO> filtered = nearbyPlaces.stream()
+                    .filter(place -> matchesQuery(place, query))
+                    .toList();
+
+            if (!filtered.isEmpty()) {
+                return filtered.stream()
+                        .limit(safeLimit)
+                        .toList();
+            }
+
+            return nearbyPlaces.stream()
+                    .limit(safeLimit)
+                    .toList();
+
+        } catch (Exception e) {
+            throw new BusinessException("Erro ao buscar lugares próximos para essa pesquisa: " + e.getMessage());
+        }
+    }
+
+    @Override
     public PlaceDetailDTO getPlaceDetails(String placeId) {
         try {
             Map<String, Object> response = restClient.get()
@@ -195,6 +227,27 @@ public class OpenTripMapClient implements PlaceProviderClient {
         String name = normalize(place.getName());
         String category = normalize(place.getCategory());
 
+        // 🔥 sinônimos básicos
+        if (normalizedQuery.contains("pizza") && category.contains("restaurant")) {
+            return true;
+        }
+
+        if (normalizedQuery.contains("hamburguer") && category.contains("restaurant")) {
+            return true;
+        }
+
+        if (normalizedQuery.contains("hotel") && category.contains("accommodation")) {
+            return true;
+        }
+
+        if (normalizedQuery.contains("farmacia") && category.contains("shop")) {
+            return true;
+        }
+
+        if (normalizedQuery.contains("museu") && category.contains("museum")) {
+            return true;
+        }
+
         return name.contains(normalizedQuery) || category.contains(normalizedQuery);
     }
 
@@ -209,10 +262,36 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
         String normalizedFilter = normalize(categoryFilter);
 
-        return Arrays.stream(rawKinds.split(","))
+        List<String> kinds = Arrays.stream(rawKinds.split(","))
                 .map(String::trim)
                 .map(this::normalize)
-                .anyMatch(kind -> kind.contains(normalizedFilter));
+                .toList();
+
+        // 🔥 mapeamento inteligente
+        if (normalizedFilter.equals("restaurants")) {
+            return kinds.contains("restaurant")
+                    || kinds.contains("fast_food")
+                    || kinds.contains("catering")
+                    || kinds.contains("cafe");
+        }
+
+        if (normalizedFilter.equals("accommodations")) {
+            return kinds.contains("hotel")
+                    || kinds.contains("hostel")
+                    || kinds.contains("guest_house");
+        }
+
+        if (normalizedFilter.equals("museums")) {
+            return kinds.contains("museum");
+        }
+
+        if (normalizedFilter.equals("shops")) {
+            return kinds.contains("shop")
+                    || kinds.contains("mall");
+        }
+
+        // fallback padrão
+        return kinds.stream().anyMatch(k -> k.contains("restaurant"));
     }
 
     private boolean isBadKind(String rawKinds) {

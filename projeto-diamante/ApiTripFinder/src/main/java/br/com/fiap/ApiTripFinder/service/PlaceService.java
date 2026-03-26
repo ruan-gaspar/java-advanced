@@ -26,6 +26,11 @@ public class PlaceService {
         return placeProviderClient.searchNearby(latitude, longitude, radius, category, limit);
     }
 
+    public List<PlaceSummaryDTO> searchNearbyByTerm(Double latitude, Double longitude, Integer radius, String query, String category, Integer limit
+    ) {
+        return placeProviderClient.searchNearbyByTerm(latitude, longitude, radius, query, category, limit);
+    }
+
     public PlaceDetailDTO getPlaceDetails(String placeId) {
         return placeProviderClient.getPlaceDetails(placeId);
     }
