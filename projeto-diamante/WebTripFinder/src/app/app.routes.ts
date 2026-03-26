@@ -5,13 +5,16 @@ import { HomeComponent } from './features/auth/pages/home/home.component';
 import { SearchComponent } from './features/auth/pages/search/search.component';
 import { PlaceDetailComponent } from './features/auth/pages/place-detail/place-detail.component';
 import { FavoritesComponent } from './features/auth/pages/favorites/favorites.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'places/search', component: SearchComponent },
-  { path: 'places/:id', component: PlaceDetailComponent },
-  { path: 'favorites', component: FavoritesComponent },
+
+  { path: '', component: HomeComponent, canActivate: [authGuard] },
+  { path: 'places/search', component: SearchComponent, canActivate: [authGuard] },
+  { path: 'places/:id', component: PlaceDetailComponent, canActivate: [authGuard] },
+  { path: 'favorites', component: FavoritesComponent, canActivate: [authGuard] },
+
   { path: '**', redirectTo: '' }
 ];

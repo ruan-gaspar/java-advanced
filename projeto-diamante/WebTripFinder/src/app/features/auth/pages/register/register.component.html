@@ -1,1 +1,28 @@
-<p>register works!</p>
+<main class="min-h-screen bg-slate-950 px-6 py-10 text-white">
+  <div class="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-8">
+    <h1 class="mb-6 text-3xl font-bold">Criar conta</h1>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+      <input formControlName="name" type="text" placeholder="Nome"
+        class="rounded-xl border border-white/10 bg-black/30 px-4 py-3" />
+
+      <input formControlName="email" type="email" placeholder="Email"
+        class="rounded-xl border border-white/10 bg-black/30 px-4 py-3" />
+
+      <input formControlName="password" type="password" placeholder="Senha"
+        class="rounded-xl border border-white/10 bg-black/30 px-4 py-3" />
+
+      <button type="submit" class="rounded-xl bg-emerald-600 py-3 font-semibold">
+        Registrar
+      </button>
+
+      @if (errorMessage) {
+        <p class="text-sm text-red-400">{{ errorMessage }}</p>
+      }
+
+      <a routerLink="/login" class="text-sm text-emerald-400 hover:underline">
+        Já tenho conta
+      </a>
+    </form>
+  </div>
+</main>

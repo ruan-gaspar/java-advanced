@@ -46,9 +46,11 @@
             Entrar
           </button>
 
-          <p *ngIf="errorMessage" class="text-red-400 text-sm text-center">
-            {{ errorMessage }}
-          </p>
+         @if (errorMessage) {
+  <p class="text-red-400 text-sm text-center">
+    {{ errorMessage }}
+  </p>
+}
 
         </form>
       </div>
