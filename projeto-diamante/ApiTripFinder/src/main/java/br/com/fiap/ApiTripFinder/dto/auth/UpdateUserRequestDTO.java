@@ -10,6 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UpdateUserRequestDTO {
+    private String name;
+
     @Email(message = "E-mail inválido")
     private String email;
 

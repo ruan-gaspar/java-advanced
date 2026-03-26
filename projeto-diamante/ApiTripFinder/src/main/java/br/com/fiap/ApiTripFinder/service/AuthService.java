@@ -94,15 +94,15 @@ public class AuthService {
         if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new BusinessException("Senha inválida");
         }
-        if(request.getEmail() != null && request.getEmail().isEmpty()) {
-            boolean emailAlreadyExists = userRepository.existsByEmail(request.getEmail())
-                    && user.getEmail().equals(request.getEmail());
-            if(emailAlreadyExists) {
-                throw new BusinessException("Já existe um usuário cadastrado com esse e-mail");
+     if (request.getName() != null && !request.getName().isBlank()) {
+         user.setName(request.getName());
+     }
+        if(request.getEmail() != null && !request.getEmail().isBlank()
+        && !user.getEmail().equals(request.getEmail())
+        && userRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessException("Já existe um usuário cadastrado com esse e-mail.");
             }
-            user.setEmail(request.getEmail());
-        }
-        if (request.getNewPassword() != null && request.getNewPassword().isBlank()) {
+        if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         }
         User updatedUser = userRepository.save(user);

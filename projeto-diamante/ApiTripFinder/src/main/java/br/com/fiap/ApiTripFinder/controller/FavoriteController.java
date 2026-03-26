@@ -5,7 +5,6 @@ import br.com.fiap.ApiTripFinder.dto.favorite.FavoritePlaceResponseDTO;
 import br.com.fiap.ApiTripFinder.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.persistence.PostUpdate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

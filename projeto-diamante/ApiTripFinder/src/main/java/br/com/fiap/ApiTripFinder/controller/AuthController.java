@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
 
     private final AuthService authService;
@@ -35,7 +36,7 @@ public class AuthController {
     public AuthResponseDTO me(Authentication authentication) {
         return authService.getCurrentUser(authentication.getName());
     }
-    @Operation(summary = "Atualizar o e-mail e/ou senha do usuário autenticado")
+    @Operation(summary = "Alterar nome, e-mail ou senha")
     @PutMapping("/me")
     public AuthResponseDTO updateMe(
             Authentication authentication,

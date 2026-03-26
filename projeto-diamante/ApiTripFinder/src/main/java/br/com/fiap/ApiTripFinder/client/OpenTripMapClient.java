@@ -38,16 +38,18 @@ public class OpenTripMapClient implements PlaceProviderClient {
     @Override
     public List<PlaceSummaryDTO> searchPlaces(String query, String city, String category, Integer limit) {
         try {
-            String locationName = (city != null && !city.isBlank()) ? city : query;
-
             Map<String, Object> geoname = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/places/geoname")
-                            .queryParam("name", locationName)
+                            .queryParam("name", city)
                             .queryParam("apikey", apiKey)
                             .build())
                     .retrieve()
                     .body(Map.class);
+
+            if (geoname == null || geoname.isEmpty()) {
+                return List.of();
+            }
 
             Double lat = asDouble(geoname.get("lat"));
             Double lon = asDouble(geoname.get("lon"));
@@ -56,12 +58,18 @@ public class OpenTripMapClient implements PlaceProviderClient {
                 return List.of();
             }
 
-            List<PlaceSummaryDTO> places = searchNearby(lat, lon, 7000, category, limit != null ? limit * 3 : 30);
+            List<PlaceSummaryDTO> places = searchNearby(
+                    lat,
+                    lon,
+                    7000,
+                    category,
+                    limit != null ? limit * 3 : 30
+            );
 
             return places.stream()
                     .filter(place -> matchesQuery(place, query))
                     .limit(limit != null ? limit : 10)
-                    .collect(Collectors.toList());
+                    .toList();
 
         } catch (Exception e) {
             throw new BusinessException("Erro ao consultar a OpenTripMap: " + e.getMessage());

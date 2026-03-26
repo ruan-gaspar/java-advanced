@@ -15,6 +15,10 @@ public class PlaceService {
     private final PlaceProviderClient placeProviderClient;
 
     public List<PlaceSummaryDTO> searchPlaces(String query, String city, String category, Integer limit) {
+        if (city == null || city.isBlank()) {
+            throw new IllegalArgumentException("Informe a cidade para realizar a busca por termo.");
+        }
+
         return placeProviderClient.searchPlaces(query, city, category, limit);
     }
 
