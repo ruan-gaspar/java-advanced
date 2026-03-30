@@ -2,8 +2,18 @@
   <div class="mx-auto max-w-5xl">
     <header class="mb-8">
       <a routerLink="/" class="text-sm text-emerald-400 hover:underline">← Voltar</a>
-      <h1 class="mt-3 text-3xl font-bold">Buscar lugares</h1>
-      <p class="text-zinc-400">Digite um termo e, se quiser, informe uma cidade.</p>
+
+      <h1 class="mt-3 text-3xl font-bold">
+        {{ isExploreMode() ? 'Explorar lugares' : 'Buscar lugares' }}
+      </h1>
+
+      <p class="text-zinc-400">
+        @if (isExploreMode()) {
+          Use sua localização atual para descobrir lugares próximos.
+        } @else {
+          Digite um termo e, se quiser, informe uma cidade.
+        }
+      </p>
     </header>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-8 grid gap-4 md:grid-cols-3">
@@ -13,11 +23,13 @@
         placeholder="Ex: pizza, museu, hotel"
         class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none" />
 
-      <input
-        type="text"
-        formControlName="city"
-        placeholder="Cidade opcional"
-        class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none" />
+      @if (!isExploreMode()) {
+        <input
+          type="text"
+          formControlName="city"
+          placeholder="Cidade opcional"
+          class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none" />
+      }
 
       <button
         type="submit"
@@ -41,17 +53,35 @@
             class="cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10"
             (click)="openDetail(place)">
             <h2 class="text-xl font-semibold">{{ place.name }}</h2>
-            <p class="mt-2 text-sm text-zinc-400">{{ place.category || 'Sem categoria' }}</p>
-            <p class="mt-2 text-sm text-zinc-500">
-              {{ place.city || 'Cidade não informada' }} {{ place.country ? '- ' + place.country : '' }}
+
+            <p class="mt-2 text-sm text-zinc-400">
+              {{ place.category || 'Sem categoria' }}
             </p>
+
+            @if (place.distance !== null && place.distance !== undefined) {
+              <p class="mt-2 text-sm text-zinc-500">
+                Distância: {{ place.distance | number:'1.0-0' }} m
+              </p>
+            }
+
+            @if (place.city || place.country) {
+              <p class="mt-2 text-sm text-zinc-500">
+                {{ place.city || '' }}{{ place.city && place.country ? ' - ' : '' }}{{ place.country || '' }}
+              </p>
+            }
+
+            @if (place.address) {
+              <p class="mt-2 text-sm text-zinc-500">
+                {{ place.address }}
+              </p>
+            }
           </article>
         }
       </section>
     }
 
-    @if (!loading() && results().length === 0 && !errorMessage()) {
-      <p class="text-zinc-500">Nenhum resultado ainda.</p>
+    @if (searched() && !loading() && results().length === 0 && !errorMessage()) {
+      <p class="text-zinc-500">Nenhum resultado encontrado.</p>
     }
   </div>
 </main>

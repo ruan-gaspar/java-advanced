@@ -12,7 +12,6 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
 
   { path: '', component: HomeComponent, canActivate: [authGuard] },
-  { path: 'places/search', component: SearchComponent, canActivate: [authGuard] },
   { path: 'places/:id', component: PlaceDetailComponent, canActivate: [authGuard] },
   { path: 'favorites', component: FavoritesComponent, canActivate: [authGuard] },
 

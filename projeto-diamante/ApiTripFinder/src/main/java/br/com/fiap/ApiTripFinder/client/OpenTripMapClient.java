@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.text.Normalizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,10 +22,8 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
     private static final Set<String> BAD_KINDS = Set.of(
             "other",
-            "interesting_places",
             "route",
             "paths",
-            "urban_environment",
             "unclassified_objects"
     );
 
@@ -37,11 +36,19 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
     @Override
     public List<PlaceSummaryDTO> searchPlaces(String query, String city, String category, Integer limit) {
+        if (query == null || query.isBlank()) {
+            throw new BusinessException("O termo de busca é obrigatório.");
+        }
+
+        if (city == null || city.isBlank()) {
+            throw new BusinessException("A cidade é obrigatória para a busca por cidade.");
+        }
+
         try {
             Map<String, Object> geoname = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/places/geoname")
-                            .queryParam("name", city)
+                            .queryParam("name", city.trim())
                             .queryParam("apikey", apiKey)
                             .build())
                     .retrieve()
@@ -58,19 +65,30 @@ public class OpenTripMapClient implements PlaceProviderClient {
                 return List.of();
             }
 
+            int safeLimit = normalizeLimit(limit);
+            int fetchLimit = Math.max(safeLimit * 6, 60);
+
             List<PlaceSummaryDTO> places = searchNearby(
                     lat,
                     lon,
-                    7000,
+                    15000,
                     category,
-                    limit != null ? limit * 3 : 30
+                    fetchLimit
             );
+
+            if (category != null && !category.isBlank()) {
+                return places.stream()
+                        .limit(safeLimit)
+                        .toList();
+            }
 
             return places.stream()
                     .filter(place -> matchesQuery(place, query))
-                    .limit(limit != null ? limit : 10)
+                    .limit(safeLimit)
                     .toList();
 
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessException("Erro ao consultar a OpenTripMap: " + e.getMessage());
         }
@@ -78,14 +96,18 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
     @Override
     public List<PlaceSummaryDTO> searchNearby(Double latitude, Double longitude, Integer radius, String category, Integer limit) {
+        if (latitude == null || longitude == null) {
+            throw new BusinessException("Latitude e longitude são obrigatórias.");
+        }
+
         try {
             List<?> response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/places/radius")
-                            .queryParam("radius", radius != null ? radius : 3000)
+                            .queryParam("radius", normalizeRadius(radius))
                             .queryParam("lon", longitude)
                             .queryParam("lat", latitude)
-                            .queryParam("limit", limit != null ? limit : 10)
+                            .queryParam("limit", normalizeLimit(limit))
                             .queryParam("rate", 2)
                             .queryParam("format", "json")
                             .queryParam("apikey", apiKey)
@@ -94,6 +116,9 @@ public class OpenTripMapClient implements PlaceProviderClient {
                     .body(List.class);
 
             return mapRadiusResults(response, category);
+
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessException("Erro ao buscar lugares próximos na OpenTripMap: " + e.getMessage());
         }
@@ -101,31 +126,40 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
     @Override
     public List<PlaceSummaryDTO> searchNearbyByTerm(Double latitude, Double longitude, Integer radius, String query, String category, Integer limit) {
+        if (latitude == null || longitude == null) {
+            throw new BusinessException("Latitude e longitude são obrigatórias.");
+        }
+
+        if (query == null || query.isBlank()) {
+            throw new BusinessException("O termo de busca é obrigatório.");
+        }
+
         try {
-            int safeLimit = limit != null ? limit : 10;
-            int fetchLimit = Math.max(safeLimit * 3, 30);
+            int safeLimit = normalizeLimit(limit);
+            int fetchLimit = Math.max(safeLimit * 6, 60);
+            String effectiveCategory = (category != null && !category.isBlank()) ? category : query;
 
             List<PlaceSummaryDTO> nearbyPlaces = searchNearby(
                     latitude,
                     longitude,
-                    radius != null ? radius : 3000,
-                    category,
+                    normalizeRadius(radius),
+                    effectiveCategory,
                     fetchLimit
             );
-            List<PlaceSummaryDTO> filtered = nearbyPlaces.stream()
-                    .filter(place -> matchesQuery(place, query))
-                    .toList();
 
-            if (!filtered.isEmpty()) {
-                return filtered.stream()
+            if (isSupportedCategoryQuery(query)) {
+                return nearbyPlaces.stream()
                         .limit(safeLimit)
                         .toList();
             }
 
             return nearbyPlaces.stream()
+                    .filter(place -> matchesQuery(place, query))
                     .limit(safeLimit)
                     .toList();
 
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessException("Erro ao buscar lugares próximos para essa pesquisa: " + e.getMessage());
         }
@@ -133,6 +167,10 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
     @Override
     public PlaceDetailDTO getPlaceDetails(String placeId) {
+        if (placeId == null || placeId.isBlank()) {
+            throw new BusinessException("O identificador do lugar é obrigatório.");
+        }
+
         try {
             Map<String, Object> response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -142,13 +180,17 @@ public class OpenTripMapClient implements PlaceProviderClient {
                     .retrieve()
                     .body(Map.class);
 
+            if (response == null || response.isEmpty()) {
+                throw new BusinessException("Lugar não encontrado.");
+            }
+
             Map<String, Object> address = safeMap(response.get("address"));
             Map<String, Object> point = safeMap(response.get("point"));
             Map<String, Object> preview = safeMap(response.get("preview"));
 
             return PlaceDetailDTO.builder()
                     .id(asString(response.get("xid")))
-                    .name(asString(response.get("name")))
+                    .name(firstNonBlank(asString(response.get("name")), "Local sem nome"))
                     .description(extractDescription(response))
                     .category(formatKinds(asString(response.get("kinds"))))
                     .address(buildAddress(address))
@@ -165,6 +207,9 @@ public class OpenTripMapClient implements PlaceProviderClient {
                     .imageUrl(extractImageUrl(preview))
                     .phone(null)
                     .build();
+
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessException("Erro ao buscar detalhes do lugar na OpenTripMap: " + e.getMessage());
         }
@@ -186,8 +231,13 @@ public class OpenTripMapClient implements PlaceProviderClient {
             Map<String, Object> place = (Map<String, Object>) rawItem;
             Map<String, Object> point = safeMap(place.get("point"));
 
+            String xid = asString(place.get("xid"));
             String name = asString(place.get("name"));
             String rawKinds = asString(place.get("kinds"));
+
+            if (xid == null || xid.isBlank()) {
+                continue;
+            }
 
             if (name == null || name.isBlank()) {
                 continue;
@@ -200,9 +250,12 @@ public class OpenTripMapClient implements PlaceProviderClient {
             if (!matchesCategory(rawKinds, categoryFilter)) {
                 continue;
             }
+            if (name == null || name.isBlank()) {
+                continue;
+            }
 
             places.add(PlaceSummaryDTO.builder()
-                    .id(asString(place.get("xid")))
+                    .id(xid)
                     .name(name)
                     .category(formatKinds(rawKinds))
                     .address(null)
@@ -210,45 +263,29 @@ public class OpenTripMapClient implements PlaceProviderClient {
                     .country(null)
                     .latitude(asDouble(point.get("lat")))
                     .longitude(asDouble(point.get("lon")))
-                    .distance(null)
+                    .distance(asDouble(place.get("dist")))
                     .imageUrl(null)
                     .build());
         }
 
         return places;
     }
-
-    private boolean matchesQuery(PlaceSummaryDTO place, String query) {
-        if (query == null || query.isBlank()) {
+    private boolean isInvalidPlaceName(String name) {
+        if (name == null || name.isBlank()) {
             return true;
         }
 
-        String normalizedQuery = normalize(query);
-        String name = normalize(place.getName());
-        String category = normalize(place.getCategory());
+        String normalized = normalize(name);
 
-        // 🔥 sinônimos básicos
-        if (normalizedQuery.contains("pizza") && category.contains("restaurant")) {
-            return true;
-        }
-
-        if (normalizedQuery.contains("hamburguer") && category.contains("restaurant")) {
-            return true;
-        }
-
-        if (normalizedQuery.contains("hotel") && category.contains("accommodation")) {
-            return true;
-        }
-
-        if (normalizedQuery.contains("farmacia") && category.contains("shop")) {
-            return true;
-        }
-
-        if (normalizedQuery.contains("museu") && category.contains("museum")) {
-            return true;
-        }
-
-        return name.contains(normalizedQuery) || category.contains(normalizedQuery);
+        return normalized.matches(".*painel\\s*\\d+.*")
+                || normalized.matches(".*panel\\s*\\d+.*")
+                || normalized.contains("sculpture")
+                || normalized.contains("statue")
+                || normalized.contains("memorial plaque")
+                || normalized.contains("plaqueta")
+                || normalized.contains("detail")
+                || normalized.contains("fragment")
+                || normalized.length() < 3;
     }
 
     private boolean matchesCategory(String rawKinds, String categoryFilter) {
@@ -267,31 +304,126 @@ public class OpenTripMapClient implements PlaceProviderClient {
                 .map(this::normalize)
                 .toList();
 
-        // 🔥 mapeamento inteligente
-        if (normalizedFilter.equals("restaurants")) {
-            return kinds.contains("restaurant")
-                    || kinds.contains("fast_food")
-                    || kinds.contains("catering")
-                    || kinds.contains("cafe");
+        return switch (normalizedFilter) {
+            case "museum", "museu" ->
+                    containsAnyPart(kinds, "museum", "museums", "art_galleries", "cultural");
+
+            case "theatre", "teatro" ->
+                    containsAnyPart(kinds, "theatre", "theatres", "entertainments", "cultural", "music_venues");
+
+            case "cinema" ->
+                    containsAnyPart(kinds, "cinema", "cinemas", "entertainments", "cultural");
+
+            case "hotel", "hostel", "hospedagem" ->
+                    containsAnyPart(kinds, "hotel", "hotels", "hostel", "hostels", "accommodation", "accomodation", "apartments", "guest_house", "motel");
+
+            case "church", "igreja", "cathedral", "catedral" ->
+                    containsAnyPart(kinds, "church", "churches", "cathedral", "cathedrals", "religion", "chapel", "chapels");
+
+            case "park", "parque" ->
+                    containsAnyPart(kinds, "park", "parks", "gardens", "gardens_and_parks", "natural", "botanical_gardens");
+
+            case "monument", "monumento" ->
+                    containsAnyPart(kinds, "monument", "monuments", "memorial", "memorials", "sculpture", "sculptures");
+
+            case "shop", "shopping" ->
+                    containsAnyPart(kinds, "shop", "shops", "mall", "malls", "market", "marketplaces", "supermarkets");
+
+            case "historic", "historico", "histórico" ->
+                    containsAnyPart(kinds, "historic", "historic_architecture", "archaeology", "fortification", "fortifications", "palaces");
+
+            default ->
+                    kinds.stream().anyMatch(k -> k.contains(normalizedFilter));
+        };
+    }
+
+    private boolean matchesQuery(PlaceSummaryDTO place, String query) {
+        if (query == null || query.isBlank()) {
+            return true;
         }
 
-        if (normalizedFilter.equals("accommodations")) {
-            return kinds.contains("hotel")
-                    || kinds.contains("hostel")
-                    || kinds.contains("guest_house");
-        }
+        String normalizedQuery = normalize(query);
+        String name = normalize(place.getName());
+        String category = normalize(place.getCategory());
+        String address = normalize(place.getAddress());
+        String city = normalize(place.getCity());
 
-        if (normalizedFilter.equals("museums")) {
-            return kinds.contains("museum");
-        }
+        return switch (normalizedQuery) {
+            case "museum", "museu" ->
+                    containsAnyText(name, category, address, city, "museum", "museu", "art", "gallery");
 
-        if (normalizedFilter.equals("shops")) {
-            return kinds.contains("shop")
-                    || kinds.contains("mall");
-        }
+            case "theatre", "teatro" ->
+                    containsAnyText(name, category, address, city, "theatre", "teatro", "cultural", "entertainment");
 
-        // fallback padrão
-        return kinds.stream().anyMatch(k -> k.contains("restaurant"));
+            case "cinema" ->
+                    containsAnyText(name, category, address, city, "cinema", "movie", "entertainment", "theatre");
+
+            case "hotel", "hostel", "hospedagem" ->
+                    containsAnyText(name, category, address, city, "hotel", "hostel", "accommodation", "guest", "motel");
+
+            case "church", "igreja", "cathedral", "catedral" ->
+                    containsAnyText(name, category, address, city, "church", "igreja", "cathedral", "catedral", "religion", "chapel");
+
+            case "park", "parque" ->
+                    containsAnyText(name, category, address, city, "park", "parque", "garden", "natural");
+
+            case "monument", "monumento" ->
+                    containsAnyText(name, category, address, city, "monument", "monumento", "memorial", "historic");
+
+            case "shop", "shopping" ->
+                    containsAnyText(name, category, address, city, "shop", "shopping", "mall", "market");
+
+            case "historic", "historico", "histórico" ->
+                    containsAnyText(name, category, address, city, "historic", "historico", "histórico", "architecture", "archaeology");
+
+            default ->
+                    name.contains(normalizedQuery)
+                            || category.contains(normalizedQuery)
+                            || address.contains(normalizedQuery)
+                            || city.contains(normalizedQuery);
+        };
+    }
+
+    private boolean isSupportedCategoryQuery(String query) {
+        String normalized = normalize(query);
+
+        return Set.of(
+                "museum", "museu",
+                "theatre", "teatro",
+                "cinema",
+                "hotel", "hostel", "hospedagem",
+                "church", "igreja", "cathedral", "catedral",
+                "park", "parque",
+                "monument", "monumento",
+                "shop", "shopping",
+                "historic", "historico", "histórico"
+        ).contains(normalized);
+    }
+
+    private boolean containsAnyText(String name, String category, String address, String city, String... terms) {
+        List<String> fields = List.of(name, category, address, city);
+
+        return Arrays.stream(terms)
+                .map(this::normalize)
+                .anyMatch(term -> fields.stream().anyMatch(field -> field.contains(term)));
+    }
+
+    private boolean containsAnyPart(List<String> values, String... expectedParts) {
+        List<String> normalizedExpected = Arrays.stream(expectedParts)
+                .map(this::normalize)
+                .toList();
+
+        return values.stream().anyMatch(value ->
+                normalizedExpected.stream().anyMatch(value::contains)
+        );
+    }
+
+    private boolean containsAny(List<String> values, String... expected) {
+        Set<String> expectedSet = Arrays.stream(expected)
+                .map(this::normalize)
+                .collect(Collectors.toSet());
+
+        return values.stream().anyMatch(expectedSet::contains);
     }
 
     private boolean isBadKind(String rawKinds) {
@@ -301,6 +433,7 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
         List<String> kinds = Arrays.stream(rawKinds.split(","))
                 .map(String::trim)
+                .map(this::normalize)
                 .toList();
 
         return kinds.stream().allMatch(BAD_KINDS::contains);
@@ -311,10 +444,49 @@ public class OpenTripMapClient implements PlaceProviderClient {
             return null;
         }
 
+        List<String> kinds = Arrays.stream(rawKinds.split(","))
+                .map(String::trim)
+                .map(this::normalize)
+                .toList();
+
+        if (containsAnyPart(kinds, "museum", "museums", "art_galleries")) {
+            return "Museus";
+        }
+
+        if (containsAnyPart(kinds, "cinema", "cinemas")) {
+            return "Cinemas";
+        }
+
+        if (containsAnyPart(kinds, "theatre", "theatres", "entertainments")) {
+            return "Teatros e cultura";
+        }
+
+        if (containsAnyPart(kinds, "hotel", "hotels", "hostel", "hostels", "accommodation", "accomodation", "apartments", "motel")) {
+            return "Hotéis";
+        }
+
+        if (containsAnyPart(kinds, "church", "churches", "cathedral", "cathedrals", "religion", "chapel")) {
+            return "Igrejas";
+        }
+
+        if (containsAnyPart(kinds, "park", "parks", "gardens", "gardens_and_parks", "natural")) {
+            return "Parques";
+        }
+
+        if (containsAnyPart(kinds, "monument", "monuments", "memorial", "memorials", "sculpture", "sculptures")) {
+            return "Monumentos";
+        }
+
+        if (containsAnyPart(kinds, "shop", "shops", "mall", "malls", "market", "marketplaces")) {
+            return "Compras e lazer";
+        }
+
+        if (containsAnyPart(kinds, "historic", "historic_architecture", "archaeology", "fortification", "palaces")) {
+            return "Pontos históricos";
+        }
+
         return Arrays.stream(rawKinds.split(","))
                 .map(String::trim)
-                .filter(kind -> !BAD_KINDS.contains(kind))
-                .limit(3)
                 .map(this::humanizeKind)
                 .collect(Collectors.joining(", "));
     }
@@ -328,6 +500,7 @@ public class OpenTripMapClient implements PlaceProviderClient {
     private String extractDescription(Map<String, Object> response) {
         Map<String, Object> wikipediaExtracts = safeMap(response.get("wikipedia_extracts"));
         String text = asString(wikipediaExtracts.get("text"));
+
         if (text != null && !text.isBlank()) {
             return text;
         }
@@ -338,10 +511,7 @@ public class OpenTripMapClient implements PlaceProviderClient {
 
     private String extractImageUrl(Map<String, Object> preview) {
         String source = asString(preview.get("source"));
-        if (source != null && !source.isBlank()) {
-            return source;
-        }
-        return null;
+        return (source != null && !source.isBlank()) ? source : null;
     }
 
     private String extractWebsite(Map<String, Object> response) {
@@ -357,26 +527,36 @@ public class OpenTripMapClient implements PlaceProviderClient {
     private String buildAddress(Map<String, Object> address) {
         List<String> parts = new ArrayList<>();
 
-        addIfPresent(parts, asString(address.get("road")));
-        addIfPresent(parts, asString(address.get("pedestrian")));
-        addIfPresent(parts, asString(address.get("house_number")));
+        String street = firstNonBlank(
+                asString(address.get("road")),
+                asString(address.get("pedestrian")),
+                asString(address.get("footway")),
+                asString(address.get("street"))
+        );
+
+        String houseNumber = asString(address.get("house_number"));
+
+        if (street != null && houseNumber != null && !houseNumber.isBlank()) {
+            addIfPresent(parts, street + ", " + houseNumber);
+        } else {
+            addIfPresent(parts, street);
+        }
+
         addIfPresent(parts, firstNonBlank(
                 asString(address.get("suburb")),
                 asString(address.get("neighbourhood"))
         ));
+
         addIfPresent(parts, firstNonBlank(
                 asString(address.get("city")),
                 asString(address.get("town")),
                 asString(address.get("village"))
         ));
+
         addIfPresent(parts, asString(address.get("state")));
         addIfPresent(parts, asString(address.get("country")));
 
-        if (parts.isEmpty()) {
-            return null;
-        }
-
-        return String.join(", ", parts);
+        return parts.isEmpty() ? null : String.join(", ", parts);
     }
 
     private void addIfPresent(List<String> parts, String value) {
@@ -392,6 +572,14 @@ public class OpenTripMapClient implements PlaceProviderClient {
             }
         }
         return null;
+    }
+
+    private Integer normalizeLimit(Integer limit) {
+        return (limit == null || limit <= 0) ? 10 : limit;
+    }
+
+    private Integer normalizeRadius(Integer radius) {
+        return (radius == null || radius <= 0) ? 3000 : radius;
     }
 
     @SuppressWarnings("unchecked")
@@ -410,10 +598,24 @@ public class OpenTripMapClient implements PlaceProviderClient {
         if (value instanceof Number number) {
             return number.doubleValue();
         }
+
+        if (value instanceof String text) {
+            try {
+                return Double.parseDouble(text);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+
         return null;
     }
 
     private String normalize(String value) {
-        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+        if (value == null) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD);
+        return normalized.replaceAll("\\p{M}", "").trim().toLowerCase(Locale.ROOT);
     }
 }

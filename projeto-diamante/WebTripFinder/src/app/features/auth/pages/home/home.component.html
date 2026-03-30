@@ -1,39 +1,193 @@
 <main class="min-h-screen bg-slate-950 px-6 py-10 text-white">
-  <div class="mx-auto max-w-5xl">
-    <header class="mb-8 flex items-center justify-between">
+  <div class="mx-auto max-w-6xl">
+    <header class="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <p class="text-sm uppercase tracking-[0.2em] text-emerald-400">TripFinder</p>
-        <h1 class="text-3xl font-bold">Painel inicial</h1>
+        <h1 class="text-3xl font-bold md:text-4xl">Descubra lugares de forma simples</h1>
+        <p class="mt-2 max-w-2xl text-zinc-400">
+          Escolha uma categoria visual e encontre opções por cidade ou perto de você.
+        </p>
       </div>
 
-      <button
-        (click)="logout()"
-        class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10">
-        Sair
-      </button>
+      <div class="flex gap-3">
+        <a
+          routerLink="/favorites"
+          class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10">
+          Favoritos
+        </a>
+
+        <button
+          (click)="logout()"
+          class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10">
+          Sair
+        </button>
+      </div>
     </header>
 
-    <section class="grid gap-6 md:grid-cols-3">
-      <a
-        routerLink="/places/search"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10">
-        <h2 class="mb-2 text-xl font-semibold">Buscar lugares</h2>
-        <p class="text-sm text-zinc-400">Busque por cidade ou pela sua localização.</p>
-      </a>
+    @if (errorMessage()) {
+      <div class="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-red-300">
+        {{ errorMessage() }}
+      </div>
+    }
 
-      <a
-        routerLink="/favorites"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10">
-        <h2 class="mb-2 text-xl font-semibold">Favoritos</h2>
-        <p class="text-sm text-zinc-400">Veja os lugares salvos.</p>
-      </a>
+    <section class="mb-12 rounded-3xl border border-white/10 bg-white/5 p-6">
+      <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 class="text-2xl font-bold">Buscar por cidade</h2>
+          <p class="mt-1 text-zinc-400">
+            Informe uma cidade e clique em uma categoria para pesquisar.
+          </p>
+        </div>
 
-      <a
-        routerLink="/places/search"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6 hover:bg-white/10">
-        <h2 class="mb-2 text-xl font-semibold">Explorar</h2>
-        <p class="text-sm text-zinc-400">Descubra lugares próximos.</p>
-      </a>
+        <form [formGroup]="cityForm" class="w-full md:max-w-sm">
+          <input
+            type="text"
+            formControlName="city"
+            placeholder="Ex: São Paulo, Campinas, Rio de Janeiro"
+            class="w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 outline-none placeholder:text-zinc-500" />
+        </form>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @for (category of categories(); track category.value) {
+          <button
+            type="button"
+            (click)="searchByCity(category.value)"
+            class="group overflow-hidden rounded-3xl border border-white/10 bg-slate-900/70 text-left transition hover:-translate-y-1 hover:border-emerald-500/40 hover:bg-slate-900">
+            <div class="relative h-44 overflow-hidden">
+              <img
+                [src]="category.imageUrl"
+                [alt]="category.label"
+                class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <h3 class="text-xl font-bold text-white">{{ category.label }}</h3>
+                <p class="mt-1 text-sm text-zinc-200">{{ category.description }}</p>
+              </div>
+            </div>
+          </button>
+        }
+      </div>
+
+      @if (loadingCitySearch()) {
+        <p class="mt-6 text-zinc-400">Buscando lugares na cidade informada...</p>
+      }
+
+      @if (!loadingCitySearch() && cityResults().length > 0) {
+        <div class="mt-8">
+          <h3 class="mb-4 text-xl font-semibold">Resultados por cidade</h3>
+
+          <section class="grid gap-4 md:grid-cols-2">
+            @for (place of cityResults(); track place.id) {
+              <article
+                class="cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10"
+                (click)="openDetail(place)">
+                <h4 class="text-xl font-semibold">{{ place.name }}</h4>
+
+                <p class="mt-2 text-sm text-zinc-400">
+                  {{ place.category || 'Sem categoria' }}
+                </p>
+
+                @if (place.city || place.country) {
+                  <p class="mt-2 text-sm text-zinc-500">
+                    {{ place.city || '' }}{{ place.city && place.country ? ' - ' : '' }}{{ place.country || '' }}
+                  </p>
+                }
+
+                @if (place.address) {
+                  <p class="mt-2 text-sm text-zinc-500">
+                    {{ place.address }}
+                  </p>
+                }
+              </article>
+            }
+          </section>
+        </div>
+      }
+
+      @if (!loadingCitySearch() && cityResults().length === 0 && cityForm.valid) {
+        <p class="mt-6 text-zinc-500">
+          Selecione uma categoria para ver resultados nessa cidade.
+        </p>
+      }
+    </section>
+
+    <section class="rounded-3xl border border-white/10 bg-white/5 p-6">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold">Explorar perto de mim</h2>
+        <p class="mt-1 text-zinc-400">
+          Use sua localização atual para descobrir lugares próximos por categoria.
+        </p>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @for (category of categories(); track category.value) {
+          <button
+            type="button"
+            (click)="searchNearby(category.value)"
+            class="group overflow-hidden rounded-3xl border border-white/10 bg-slate-900/70 text-left transition hover:-translate-y-1 hover:border-emerald-500/40 hover:bg-slate-900">
+            <div class="relative h-44 overflow-hidden">
+              <img
+                [src]="category.imageUrl"
+                [alt]="category.label"
+                class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <h3 class="text-xl font-bold text-white">{{ category.label }}</h3>
+                <p class="mt-1 text-sm text-zinc-200">{{ category.description }}</p>
+              </div>
+            </div>
+          </button>
+        }
+      </div>
+
+      @if (loadingNearbySearch()) {
+        <p class="mt-6 text-zinc-400">Buscando lugares próximos...</p>
+      }
+
+      @if (!loadingNearbySearch() && nearbyResults().length > 0) {
+        <div class="mt-8">
+          <h3 class="mb-4 text-xl font-semibold">Resultados perto de você</h3>
+
+          <section class="grid gap-4 md:grid-cols-2">
+            @for (place of nearbyResults(); track place.id) {
+              <article
+                class="cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10"
+                (click)="openDetail(place)">
+                <h4 class="text-xl font-semibold">{{ place.name }}</h4>
+
+                <p class="mt-2 text-sm text-zinc-400">
+                  {{ place.category || 'Sem categoria' }}
+                </p>
+
+                @if (place.distance !== null && place.distance !== undefined) {
+                  <p class="mt-2 text-sm text-zinc-500">
+                    Distância: {{ place.distance | number:'1.0-0' }} m
+                  </p>
+                }
+
+                @if (place.city || place.country) {
+                  <p class="mt-2 text-sm text-zinc-500">
+                    {{ place.city || '' }}{{ place.city && place.country ? ' - ' : '' }}{{ place.country || '' }}
+                  </p>
+                }
+
+                @if (place.address) {
+                  <p class="mt-2 text-sm text-zinc-500">
+                    {{ place.address }}
+                  </p>
+                }
+              </article>
+            }
+          </section>
+        </div>
+      }
+
+      @if (!loadingNearbySearch() && nearbyResults().length === 0) {
+        <p class="mt-6 text-zinc-500">
+          Clique em uma categoria para explorar lugares próximos.
+        </p>
+      }
     </section>
   </div>
 </main>

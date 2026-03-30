@@ -22,7 +22,7 @@ public class PlaceController {
     @GetMapping("/search")
     public List<PlaceSummaryDTO> searchPlaces(
             @RequestParam String query,
-            @RequestParam(required = false) String city,
+            @RequestParam String city,
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "10") Integer limit
     ) {
@@ -40,16 +40,17 @@ public class PlaceController {
     ) {
         return placeService.searchNearby(latitude, longitude, radius, category, limit);
     }
-    @Operation(summary = "Buscar lugares próximos por termos que não são cidade")
+
+    @Operation(summary = "Buscar lugares próximos por termo")
     @GetMapping("/nearby/search")
     public List<PlaceSummaryDTO> searchNearbyByTerm(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
-            @RequestParam (required = false) String query,
+            @RequestParam String query,
             @RequestParam(defaultValue = "3000") Integer radius,
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "10") Integer limit
-    ){
+    ) {
         return placeService.searchNearbyByTerm(latitude, longitude, radius, query, category, limit);
     }
 

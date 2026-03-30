@@ -17,6 +17,9 @@ export class FavoritesComponent {
   loading = signal(true);
   message = signal('');
 
+  showDeleteModal = signal(false);
+  favoriteToDelete = signal<string | null>(null);
+
   constructor() {
     this.loadFavorites();
   }
@@ -34,15 +37,35 @@ export class FavoritesComponent {
     });
   }
 
-  removeFavorite(externalPlaceId: string): void {
+  openDeleteModal(externalPlaceId: string): void {
+    this.favoriteToDelete.set(externalPlaceId);
+    this.showDeleteModal.set(true);
+    this.message.set('');
+  }
+
+  closeDeleteModal(): void {
+    this.favoriteToDelete.set(null);
+    this.showDeleteModal.set(false);
+  }
+
+  confirmRemoveFavorite(): void {
+    const externalPlaceId = this.favoriteToDelete();
+
+    if (!externalPlaceId) {
+      return;
+    }
+
     this.favoriteService.removeFavorite(externalPlaceId).subscribe({
       next: () => {
         this.favorites.update(items =>
           items.filter(item => item.externalPlaceId !== externalPlaceId)
         );
+        this.message.set('Favorito removido com sucesso.');
+        this.closeDeleteModal();
       },
       error: () => {
         this.message.set('Erro ao remover favorito.');
+        this.closeDeleteModal();
       }
     });
   }

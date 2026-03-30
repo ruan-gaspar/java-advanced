@@ -15,6 +15,8 @@ public class UpdateUserRequestDTO {
     @Email(message = "E-mail inválido")
     private String email;
 
+    private String imageUrl;
+
     @NotBlank(message = "Para continuar, insira sua senha")
     private String currentPassword;
 

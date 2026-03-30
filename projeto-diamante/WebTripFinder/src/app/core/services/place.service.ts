@@ -11,31 +11,53 @@ export class PlaceService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/places`;
 
-  searchPlaces(query: string, city?: string, limit = 10): Observable<PlaceSummary[]> {
+  searchPlaces(query: string, city: string, limit = 10, category?: string): Observable<PlaceSummary[]> {
     let params = new HttpParams()
-      .set('query', query)
+      .set('query', query.trim())
+      .set('city', city.trim())
       .set('limit', limit);
 
-    if (city?.trim()) {
-      params = params.set('city', city.trim());
+    if (category?.trim()) {
+      params = params.set('category', category.trim());
     }
 
     return this.http.get<PlaceSummary[]>(`${this.apiUrl}/search`, { params });
   }
 
-  searchNearby(latitude: number, longitude: number, query?: string, limit = 10): Observable<PlaceSummary[]> {
+  searchNearby(latitude: number, longitude: number, radius = 5000, limit = 10, category?: string): Observable<PlaceSummary[]> {
     let params = new HttpParams()
       .set('latitude', latitude)
       .set('longitude', longitude)
-      .set('radius', 5000)
+      .set('radius', radius)
       .set('limit', limit);
 
-    if (query?.trim()) {
-      params = params.set('query', query.trim());
-      return this.http.get<PlaceSummary[]>(`${this.apiUrl}/nearby/search`, { params });
+    if (category?.trim()) {
+      params = params.set('category', category.trim());
     }
 
     return this.http.get<PlaceSummary[]>(`${this.apiUrl}/nearby`, { params });
+  }
+
+  searchNearbyByTerm(
+    latitude: number,
+    longitude: number,
+    query: string,
+    radius = 5000,
+    limit = 10,
+    category?: string
+  ): Observable<PlaceSummary[]> {
+    let params = new HttpParams()
+      .set('latitude', latitude)
+      .set('longitude', longitude)
+      .set('query', query.trim())
+      .set('radius', radius)
+      .set('limit', limit);
+
+    if (category?.trim()) {
+      params = params.set('category', category.trim());
+    }
+
+    return this.http.get<PlaceSummary[]>(`${this.apiUrl}/nearby/search`, { params });
   }
 
   getPlaceDetails(id: string): Observable<PlaceDetail> {

@@ -17,6 +17,6 @@ public class PlaceSummaryDTO {
     private String country;
     private Double latitude;
     private Double longitude;
-    private Integer distance;
+    private double distance;
     private String imageUrl;
 }
