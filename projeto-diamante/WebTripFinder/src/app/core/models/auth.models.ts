@@ -1,7 +1,7 @@
 export interface LoginRequest {
   email: string;
   password: string;
-}
+} 
 
 export interface RegisterRequest {
   name: string;
@@ -18,9 +18,18 @@ export interface AuthResponse {
   role: string;
 }
 
+export interface UserResponse {
+  id: number;
+  name: string;
+  email: string;
+  imageUrl?: string | null;
+  role: string;
+}
+
 export interface UpdateUserRequest {
   name?: string;
   email?: string;
+  imageUrl?: string | null;
   currentPassword: string;
   newPassword?: string;
 }

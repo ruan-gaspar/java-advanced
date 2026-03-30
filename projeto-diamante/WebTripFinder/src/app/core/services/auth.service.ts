@@ -2,7 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, UpdateUserRequest } from '../models/auth.models';
+import {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  UpdateUserRequest,
+  UserResponse
+} from '../models/auth.models';
 import { StorageService } from './storage.service';
 
 @Injectable({
@@ -33,12 +39,19 @@ export class AuthService {
     );
   }
 
-  me(): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>(`${this.apiUrl}/me`);
+  me(): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.apiUrl}/me`);
   }
 
-  updateMe(payload: UpdateUserRequest): Observable<AuthResponse> {
-    return this.http.put<AuthResponse>(`${this.apiUrl}/me`, payload);
+  updateMe(payload: UpdateUserRequest): Observable<UserResponse> {
+    return this.http.put<UserResponse>(`${this.apiUrl}/me`, payload);
+  }
+
+  uploadProfilePhoto(file: File): Observable<UserResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<UserResponse>(`${this.apiUrl}/me/photo`, formData);
   }
 
   logout(): void {

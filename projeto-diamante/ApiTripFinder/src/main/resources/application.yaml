@@ -1,27 +1,39 @@
 spring:
   application:
     name: ApiTripFinder
+
   datasource:
     url: jdbc:postgresql://localhost:5433/tripfinder
     username: tripfinder_user
     password: 123456
-opentripmap:
-  api-key: 5ae2e3f221c38a28845f05b6e20ae05a9989c75748090ecff0db21b4
-  base-url: https://api.opentripmap.com/0.1/en
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
 
 docker:
   compose:
     enabled: false
 
+opentripmap:
+  api-key: 5ae2e3f221c38a28845f05b6e20ae05a9989c75748090ecff0db21b4
+  base-url: https://api.opentripmap.com/0.1/en
+
+app:
+  upload:
+    dir: uploads
+  base-url: http://localhost:8080
+
 springdoc:
   swagger-ui:
     disable-swagger-default-url: true
 
-jpa:
-    hibernate:
-    ddl-auto: validate
-    show-sql: true
 jwt:
   secret: ZmY2NjE4Y2Q0ZjI3N2Q3M2E4M2M5N2Y0MmE3YjE5YzQ5ODQ3MTY1YjQxM2MxN2M2YjA0OGQ2YTRkZmI4Y2JlZA==
   expiration: 86400000
-
