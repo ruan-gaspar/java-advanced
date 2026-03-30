@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PlaceService } from '../../../../core/services/place.service';
 import { FavoriteService } from '../../../../core/services/favorite.service';
 import { PlaceDetail } from '../../../../core/models/place.model';
@@ -13,6 +13,7 @@ import { PlaceDetail } from '../../../../core/models/place.model';
 })
 export class PlaceDetailComponent {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private placeService = inject(PlaceService);
   private favoriteService = inject(FavoriteService);
 
@@ -24,6 +25,7 @@ export class PlaceDetailComponent {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
+      this.message.set('Lugar não encontrado.');
       this.loading.set(false);
       return;
     }
@@ -38,6 +40,10 @@ export class PlaceDetailComponent {
         this.loading.set(false);
       }
     });
+  }
+
+  goBack(): void {
+    this.router.navigateByUrl('/');
   }
 
   saveFavorite(): void {
