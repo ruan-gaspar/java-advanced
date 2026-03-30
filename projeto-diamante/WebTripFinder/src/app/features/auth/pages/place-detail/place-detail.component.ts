@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlaceService } from '../../../../core/services/place.service';
 import { FavoriteService } from '../../../../core/services/favorite.service';
 import { PlaceDetail } from '../../../../core/models/place.model';
@@ -8,7 +8,7 @@ import { PlaceDetail } from '../../../../core/models/place.model';
 @Component({
   selector: 'app-place-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './place-detail.component.html'
 })
 export class PlaceDetailComponent {

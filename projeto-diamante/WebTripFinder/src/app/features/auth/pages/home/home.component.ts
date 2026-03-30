@@ -70,7 +70,7 @@ export class HomeComponent {
     {
       label: 'Igrejas',
       value: 'church',
-      imageUrl: 'https://images.unsplash.com/photo-1520637836862-4d197d17c35a?auto=format&fit=crop&w=900&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80',
       description: 'Arquitetura e espiritualidade'
     }
   ]);
