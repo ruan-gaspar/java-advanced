@@ -2,8 +2,7 @@
 
 ## Vídeo demonstrativo
 
-> Adicione aqui o link do vídeo demonstrativo do projeto  
-> Exemplo: `https://www.youtube.com/watch?v=SEU_VIDEO`
+[![Assista ao vídeo](https://img.youtube.com/vi/4PhnyM9JA0Y/0.jpg)](https://youtu.be/4PhnyM9JA0Y?feature=shared)
 
 ---
 
