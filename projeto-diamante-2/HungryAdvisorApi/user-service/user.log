@@ -116,3 +116,6 @@ BUILD FAILED in 7s
 2026-04-23T04:23:14.102-03:00  INFO 148470 --- [user-service] [beatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_USER-SERVICE/192.168.15.18:user-service:8081 - registration status: 204
 2026-04-23T04:25:43.680-03:00  INFO 148470 --- [user-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
 2026-04-23T04:30:43.681-03:00  INFO 148470 --- [user-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-23T04:35:43.682-03:00  INFO 148470 --- [user-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-23T04:40:43.683-03:00  INFO 148470 --- [user-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-23T04:45:43.684-03:00  INFO 148470 --- [user-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration

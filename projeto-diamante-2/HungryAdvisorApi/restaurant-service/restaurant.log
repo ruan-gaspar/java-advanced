@@ -117,3 +117,6 @@ BUILD FAILED in 19s
 2026-04-23T04:23:13.813-03:00  INFO 148414 --- [restaurant-service] [beatExecutor-%d] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_RESTAURANT-SERVICE/192.168.15.18:restaurant-service:8082 - registration status: 204
 2026-04-23T04:25:43.294-03:00  INFO 148414 --- [restaurant-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
 2026-04-23T04:30:43.295-03:00  INFO 148414 --- [restaurant-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-23T04:35:43.296-03:00  INFO 148414 --- [restaurant-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-23T04:40:43.297-03:00  INFO 148414 --- [restaurant-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-04-23T04:45:43.298-03:00  INFO 148414 --- [restaurant-service] [rap-executor-%d] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
