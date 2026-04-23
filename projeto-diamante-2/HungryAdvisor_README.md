@@ -1,11 +1,11 @@
-# 🍽️ HungryAdvisor API -- Microservices Architecture
+# HungryAdvisor API -- Microservices Architecture
 
 Sistema de recomendação de restaurantes baseado em microserviços com
 Spring Boot, Eureka, Spring Cloud e IA (Ollama).
 
 ------------------------------------------------------------------------
 
-## 📦 Estrutura do Projeto
+## Estrutura do Projeto
 
     HungryAdvisorApi/
     ├── eureka-server
