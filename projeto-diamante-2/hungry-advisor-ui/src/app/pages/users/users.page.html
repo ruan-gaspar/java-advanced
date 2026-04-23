@@ -1,0 +1,26 @@
+<h1>Usuários</h1>
+
+<div *ngIf="loading">
+  <p>Carregando usuários...</p>
+</div>
+
+<div *ngIf="!loading">
+
+  <div *ngIf="users.length > 0" class="grid">
+    <div class="card" *ngFor="let user of users">
+      <h2>{{user.name}}</h2>
+      <p>🍽️ {{user.favoriteCuisine}}</p>
+      <p>📍 {{user.city}}</p>
+      <p>💰 {{formatPrice(user.priceRange)}}</p>
+
+      <button (click)="goToRecommendation(user.id)">
+        Ver recomendações
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="users.length === 0">
+    <p>Nenhum usuário encontrado.</p>
+  </div>
+
+</div>

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="HungryAdvisorApi">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/user-service.zip!/" />
+      <root url="jar://$PROJECT_DIR$/recomendation-service.zip!/" />
+      <root url="jar://$PROJECT_DIR$/eureka-server.zip!/" />
+      <root url="jar://$PROJECT_DIR$/restaurant-service.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

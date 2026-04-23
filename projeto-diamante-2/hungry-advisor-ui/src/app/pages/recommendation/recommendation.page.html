@@ -1,0 +1,18 @@
+<h1>Recomendação</h1>
+
+<div *ngIf="data">
+
+  <h2>{{data.user.name}}</h2>
+
+  <p><b>Explicação:</b> {{data.ruleBasedExplanation}}</p>
+
+  <h3>Restaurantes</h3>
+  <div *ngFor="let r of data.restaurants" class="card">
+    <h4>{{r.name}}</h4>
+    <p>{{r.category}} - ⭐ {{r.rating}}</p>
+  </div>
+
+  <h3>IA</h3>
+  <p>{{data.aiSuggestion}}</p>
+
+</div>
