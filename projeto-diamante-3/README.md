@@ -74,3 +74,5 @@ Criei um serviço ReviewService que integra o projeto com o Spring AI + Anthropi
 Adicionei a configuração AiConfig para expor um bean de ChatClient a partir do ChatModel fornecido pelo starter Anthropic, permitindo injeção transparente do cliente de chat em outros serviços.
 
 Na HomeView, o construtor passou a receber também o ReviewService, e o metodo runReview foi atualizado pra clonar o repositório, chamar o agente (ReviewService.generateFeedback), extrair nota e feedback do texto retornado e registrar a avaliação via AssessmentTools, atualizando em seguida o grid de notas.
+
+O .gif no inicio do README não mostra essas últimas alterações por um problema com a API Key da Antropic, portanto não foi possível fazer um segundo .gif demo.
