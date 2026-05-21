@@ -1,0 +1,8 @@
+fiap/com/br/projectreviewer/seeder/DatabaseSeeder.class
+fiap/com/br/projectreviewer/model/Assessment$AssessmentBuilder.class
+fiap/com/br/projectreviewer/service/AssessmentTools.class
+fiap/com/br/projectreviewer/views/HomeView.class
+fiap/com/br/projectreviewer/service/AssessmentService.class
+fiap/com/br/projectreviewer/repository/AssessmentRepository.class
+fiap/com/br/projectreviewer/ProjectReviewerApplication.class
+fiap/com/br/projectreviewer/model/Assessment.class
