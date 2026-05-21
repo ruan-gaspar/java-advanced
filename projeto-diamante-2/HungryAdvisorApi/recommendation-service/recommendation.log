@@ -64,9 +64,8 @@ Path for java installation '/usr/lib/jvm/openjdk-17' (Common Linux Locations) do
 2026-04-23T04:38:09.083-03:00  INFO 155465 --- [recommendation-service] [trap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
 2026-04-23T04:43:09.085-03:00  INFO 155465 --- [recommendation-service] [trap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
 2026-04-23T04:48:09.086-03:00  INFO 155465 --- [recommendation-service] [trap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
-eableHttpClient.java:87)
-	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:55)
-	at org.apache.hc.client5.http.classic.HttpClient.executeOpen(HttpClient.java:183)
+2026-04-23T04:53:09.088-03:00  INFO 155465 --- [recommendation-service] [trap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+ecuteOpen(HttpClient.java:183)
 	at org.springframework.http.client.HttpComponentsClientHttpRequest.executeInternal(HttpComponentsClientHttpRequest.java:95)
 	at org.springframework.http.client.AbstractStreamingClientHttpRequest.executeInternal(AbstractStreamingClientHttpRequest.java:70)
 	at org.springframework.http.client.AbstractClientHttpRequest.execute(AbstractClientHttpRequest.java:66)

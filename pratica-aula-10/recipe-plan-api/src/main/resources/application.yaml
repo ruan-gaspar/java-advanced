@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: recipe-plan-api
+vaadin:
+  launch-browser: true

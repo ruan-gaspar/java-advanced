@@ -1,4 +1,7 @@
 # Decisões de Projeto
+
+![Tela do sistema](images/tela.gif)
+
 ##### Tarefa 3 — AssessmentTools
 - As ferramentas de criação e atualização de avaliações foram separadas em uma classe específica (AssessmentTools), mantendo a lógica fora da interface e evitando acesso direto ao repository.
 
@@ -56,3 +59,18 @@ O prompt de correção ficou em Markdown (project-review-skill.md), desacoplando
 - definição clara das responsabilidades do agente.
 
 O objetivo foi evitar overengineering no projeto, usando boas práticas e simplicidade.
+
+#### Adicional necessário:
+- Foram injetados na HomeView os serviços AssessmentTools, ShellToolsService, FileSystemToolsService e SkillsService, permitindo que a lógica de correção seja disparada diretamente a partir da ação do usuário.
+
+- O método runReview passou de uma notificação estática para um fluxo completo: clona o repositório informado, lista arquivos relevantes, carrega os parametros de correção e registra uma nova avaliação (nota e feedback) no banco.
+
+- Foram adicionados métodos auxiliares para resumir o texto das skills e truncar o feedback, garantindo que a mensagem exibida ao usuário seja compatível com o limite de tamanho da coluna no banco de dados.
+
+`Importante:`
+
+Criei um serviço ReviewService que integra o projeto com o Spring AI + Anthropic, usando ChatClient para gerar automaticamente nota e feedback com base nas diretrizes de correção e na estrutura de arquivos do repositório.
+
+Adicionei a configuração AiConfig para expor um bean de ChatClient a partir do ChatModel fornecido pelo starter Anthropic, permitindo injeção transparente do cliente de chat em outros serviços.
+
+Na HomeView, o construtor passou a receber também o ReviewService, e o metodo runReview foi atualizado pra clonar o repositório, chamar o agente (ReviewService.generateFeedback), extrair nota e feedback do texto retornado e registrar a avaliação via AssessmentTools, atualizando em seguida o grid de notas.
